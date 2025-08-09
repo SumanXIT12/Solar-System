@@ -71,13 +71,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const clock = new THREE.Clock();
-
-// Lighting
 scene.add(new THREE.AmbientLight(0x555555));
 const sunlight = new THREE.PointLight(0xffffff, 3, 0);
 scene.add(sunlight);
-
-// Starfield
 const starsGeometry = new THREE.BufferGeometry();
 const starVertices = [];
 for (let i = 0; i < 10000; i++) {
@@ -88,12 +84,8 @@ for (let i = 0; i < 10000; i++) {
 starsGeometry.setAttribute("position", new THREE.Float32BufferAttribute(starVertices, 3));
 const starsMaterial = new THREE.PointsMaterial({ color: 0x888888 });
 scene.add(new THREE.Points(starsGeometry, starsMaterial));
-
-// Textures
 const textureLoader = new THREE.TextureLoader();
 textureLoader.setCrossOrigin("anonymous");
-
-// Sun
 const sunGeo = new THREE.SphereGeometry(5, 32, 32);
 const sunMat = new THREE.MeshStandardMaterial({ emissive: 0xffff33, emissiveIntensity: 4, color: 0xffffff });
 const sun = new THREE.Mesh(sunGeo, sunMat);
@@ -104,8 +96,6 @@ textureLoader.load("https://threejs.org/examples/textures/sun.jpg",
   undefined,
   () => console.warn("Sun texture failed, using fallback color.")
 );
-
-// Planets
 const planetData = [
   { name: "Mercury", radius: 7,  size: 0.4, speed: 4.8, color: 0xb5b5b5, tex: "https://threejs.org/examples/textures/planets/mercury.jpg" },
   { name: "Venus",   radius: 10, size: 0.9, speed: 3.5, color: 0xe5c76b, tex: "https://threejs.org/examples/textures/planets/venus.jpg" },
@@ -126,15 +116,11 @@ planetData.forEach(d => {
   const geo = new THREE.SphereGeometry(d.size, 32, 32);
   const mesh = new THREE.Mesh(geo, mat);
   scene.add(mesh);
-
-  // Orbit line
   const orbit = new THREE.RingGeometry(d.radius - 0.05, d.radius + 0.05, 128);
   const orbitMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.3 });
   const orbitMesh = new THREE.Mesh(orbit, orbitMat);
   orbitMesh.rotation.x = Math.PI / 2;
   scene.add(orbitMesh);
-
-  // Saturn Rings
   if (d.name === "Saturn") {
     const ringGeo = new THREE.RingGeometry(d.size * 1.2, d.size * 2, 64);
     const ringMat = new THREE.MeshStandardMaterial({
@@ -165,8 +151,6 @@ planetData.forEach(d => {
   ctrl.appendChild(slider);
   controlsDiv.appendChild(ctrl);
 });
-
-// Buttons
 const pauseBtn = document.createElement("button");
 pauseBtn.textContent = "Pause";
 pauseBtn.addEventListener("click", () => {
@@ -174,12 +158,10 @@ pauseBtn.addEventListener("click", () => {
   pauseBtn.textContent = pause ? "Resume" : "Pause";
 });
 controlsDiv.appendChild(pauseBtn);
-
 const resetBtn = document.createElement("button");
 resetBtn.textContent = "Reset Camera";
 resetBtn.addEventListener("click", setSystemView);
 controlsDiv.appendChild(resetBtn);
-
 const themeBtn = document.createElement("button");
 themeBtn.textContent = "Toggle Theme";
 themeBtn.addEventListener("click", () => {
@@ -188,8 +170,6 @@ themeBtn.addEventListener("click", () => {
   document.body.style.color = darkTheme ? "#fff" : "#000";
 });
 controlsDiv.appendChild(themeBtn);
-
-// Tooltip & picking
 const tooltip = document.getElementById("tooltip");
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -200,7 +180,6 @@ window.addEventListener("mousemove", e => {
   tooltip.style.left = e.clientX + 10 + "px";
   tooltip.style.top = e.clientY + 10 + "px";
 });
-
 window.addEventListener("click", () => {
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(planetMeshes.map(p => p.mesh));
@@ -210,11 +189,7 @@ window.addEventListener("click", () => {
     camera.lookAt(target);
   }
 });
-
-// Orbit speed scale
 const ORBIT_SPEED_SCALE = 0.1;
-
-// Animate
 function animate() {
   requestAnimationFrame(animate);
   if (!pause) {
